@@ -7,24 +7,24 @@ import _ from 'lodash'
 interface MoviesTableProps{
     data:Movie[],
     filterdData:Movie[],
-    handlePageChange:(pageNum:number)=>void
+    onPageChange:(pageNum:number)=>void
+    onFilterChange:(filters:any)=>void
     pagination:{total:number,pageSize:number,pageNum:number}
     onDelete:(id:string)=>void,
     onLike:(id:string,isLiked:boolean)=>void
   }
-const MoviesTable:React.FC<MoviesTableProps>=({data,filterdData,onDelete,onLike,pagination,handlePageChange})=>{
+const MoviesTable:React.FC<MoviesTableProps>=({data,filterdData,onDelete,onLike,pagination,onPageChange,onFilterChange})=>{
    const {pageSize,total,pageNum}=pagination
     if(data.length==0)return <p>There is no data to show</p>
-    console.log('data.length',total)
     return(
        <> 
         <table className="table">
         <thead>
           <tr>
-            <th scope="col">Title</th>
-            <th scope="col">Genre</th>
-            <th scope="col">Stock</th>
-            <th scope="col">Rate</th>
+            <th scope="col"  role='button' onClick={()=>onFilterChange({sort:'title'})} >Title</th>
+            <th scope="col"  role='button' onClick={()=>onFilterChange({sort:'genre'})}>Genre</th>
+            <th scope="col"  role='button' onClick={()=>onFilterChange({sort:'numberInStock'})}>Stock</th>
+            <th scope="col"  role='button' onClick={()=>onFilterChange({sort:'dailyRentalRate'})}>Rate</th>
           </tr>
         </thead>
         <tbody>
@@ -38,7 +38,7 @@ const MoviesTable:React.FC<MoviesTableProps>=({data,filterdData,onDelete,onLike,
             itemsCount={total}
             pageSize={pageSize}
             currentPage={pageNum}
-            onPageChange={handlePageChange}
+            onPageChange={onPageChange}
            />
            )
           

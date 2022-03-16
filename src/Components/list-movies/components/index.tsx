@@ -74,7 +74,11 @@ const Movies=()=>{
         }
       ]) 
      const [genres,setGenres]=useState<string[]>(['All Genres','Action','Comedy','Thriller'])
-     const [currFilters,setCurrentFilters]=useState<any>({pageSize:3,total:movies.length,pageNum:1,genre:'All Genres'})
+     const [currFilters,setCurrentFilters]=useState<any>({
+       pageSize:3,
+       total:movies.length,
+       pageNum:1,
+       genre:'All Genres'})
      const [filterdMovies,setfilterdMovies]=useState<Movie[]>([])
      
      const handlePageChange=useCallback((pageNum)=>{
@@ -92,12 +96,18 @@ const Movies=()=>{
         }   
      }
     
-    const handleFetchMovies=(filters:any):any=>{
+     const handleFetchMovies=(filters:any):any=>{
       const {pageNum,pageSize,total,...rest}=filters
       let filtedData=[...movies]
       let totalFilterd=0
       if(rest?.genre){
         if(rest.genre!='All Genres')filtedData=filtedData.filter(item=>item.genre.name===rest.genre)       
+      }
+      if(rest?.sort){
+        if(rest.sort=='genre'){
+          rest.sort='genre.name'
+        }
+        filtedData=_.orderBy(filtedData,[rest?.sort as string],['asc'])
       }
       
       totalFilterd=filtedData.length
@@ -118,7 +128,6 @@ const Movies=()=>{
         handleFetchMovies({...currFilters,...filters})  
     },[currFilters])
      
-
      useEffect(()=>{ 
         handleFetchMovies(currFilters) 
     },[movies])
@@ -134,9 +143,10 @@ const Movies=()=>{
                />
           </div>
           <div className='col'>
-           <h5>Showing {filterdMovies.length} movies in the database</h5>
+           <h5>Showing {currFilters.total} movies in the database</h5>
            <MoviesTable 
-           handlePageChange={handlePageChange}
+           onFilterChange={handleFiltersChange}
+           onPageChange={handlePageChange}
            filterdData={filterdMovies}
            data={movies} 
            onDelete={handleDelete}

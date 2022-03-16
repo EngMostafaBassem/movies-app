@@ -7,8 +7,7 @@ interface PaginationProps{
     onPageChange:(pageNum:number)=>void
 }
 const Pagination:React.FC<PaginationProps>=({itemsCount,pageSize,currentPage,onPageChange})=>{
-    console.log('items count',itemsCount)
-    console.log('page size',pageSize)
+
     const computePageCount=(itemsCount:number,pageSize:number)=> _.range(1,Math.ceil(itemsCount/pageSize)+1)  
     const pagesCount=useMemo(()=>computePageCount(itemsCount,pageSize),[itemsCount,pageSize])
     return(

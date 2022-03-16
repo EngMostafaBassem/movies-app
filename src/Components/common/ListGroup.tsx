@@ -11,7 +11,7 @@ const ListGroup:React.FC<ListGroupProps>=({items,onSelectItem,currentFilters})=>
         <div>
             <div className="list-group">
                 {
-                 items.map((item)=><a  className={`list-group-item list-group-item-action ${currentFilters.genre===item?'active':''}`} onClick={()=>onSelectItem({genre:item,pageNum:1})}>{item}</a>)
+                 items.map((item)=><a key={item}  className={`list-group-item list-group-item-action ${currentFilters.genre===item?'active':''}`} onClick={()=>onSelectItem({genre:item,pageNum:1})}>{item}</a>)
                 }
            
           </div>
