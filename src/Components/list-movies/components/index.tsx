@@ -74,13 +74,14 @@ const Movies=()=>{
         }
       ]) 
      const [genres,setGenres]=useState<string[]>(['All Genres','Action','Comedy','Thriller'])
-     const [currentPage,setCurrentPage]=useState<number>(1)
+     const [currFilters,setCurrentFilters]=useState<any>({pageSize:3,total:movies.length,pageNum:1,genre:'All Genres'})
      const [filterdMovies,setfilterdMovies]=useState<Movie[]>([])
-     const pagintation={
-       pageSize:3,
-       total:movies.length
+     
+     const handlePageChange=useCallback((pageNum)=>{
+      handleFetchMovies({...currFilters,pageNum})
      }
-     const handlePageChange=useCallback((pageNum)=>setCurrentPage(pageNum),[currentPage])   
+     ,[currFilters])
+    
      const handleDelete=(id:string)=>setMovies(movies.filter(movie=>movie._id!=id))
      const handleLike=(id:string,isLiked:boolean)=>{
         let updatedMovies=[...movies]
@@ -90,31 +91,46 @@ const Movies=()=>{
             setMovies(updatedMovies)
         }   
      }
-     const handleMovieGenre=(label:string)=>{ 
-     
-       if(label!='All Genres'){
-        setfilterdMovies(movies.filter(movie=>movie.genre.name===label))
-       }
-       else{
-        handlePagination()
-       }
- 
-     }
-    const handlePagination=()=>{
-      const filtedData=_(movies).slice((currentPage-1)*pagintation.pageSize,pagintation.total).take(pagintation.pageSize).value()
-      if(!filtedData.length)setCurrentPage(1)
+    
+    const handleFetchMovies=(filters:any):any=>{
+      const {pageNum,pageSize,total,...rest}=filters
+      let filtedData=[...movies]
+      let totalFilterd=0
+      if(rest?.genre){
+        if(rest.genre!='All Genres')filtedData=filtedData.filter(item=>item.genre.name===rest.genre)       
+      }
+      
+      totalFilterd=filtedData.length
+      if(totalFilterd===0){
+        setfilterdMovies(filtedData)
+        setCurrentFilters({...filters,total:totalFilterd})
+        return
+      }
+      filtedData=_(filtedData).slice((pageNum-1)*pageSize,totalFilterd).take(pageSize).value()
+      if(!filtedData.length){
+        return handleFetchMovies({total:movies.length,pageNum:1,pageSize:3,genre:'All Genres'})
+      }
       setfilterdMovies(filtedData)
+      setCurrentFilters({...filters,total:totalFilterd})
     }
-     useEffect(()=>{
-      handlePagination()
-    },[currentPage,movies])
+
+    const handleFiltersChange=useCallback((filters)=>{  
+        handleFetchMovies({...currFilters,...filters})  
+    },[currFilters])
+     
+
+     useEffect(()=>{ 
+        handleFetchMovies(currFilters) 
+    },[movies])
+
  return(
      <div className='container'>
          <div className='row'>
           <div className='col-2'>
             <ListGroup 
+               currentFilters={currFilters}
                items={genres}
-               onSelectItem={handleMovieGenre}
+               onSelectItem={handleFiltersChange}
                />
           </div>
           <div className='col'>
@@ -125,7 +141,7 @@ const Movies=()=>{
            data={movies} 
            onDelete={handleDelete}
            onLike={handleLike}
-           pagination={{...pagintation,currentPage}}
+           pagination={{total:currFilters.total,pageSize:currFilters.pageSize,pageNum:currFilters.pageNum}}
          />
           </div>
          </div>

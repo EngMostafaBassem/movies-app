@@ -1,16 +1,17 @@
 import React from 'react'
 
 interface ListGroupProps{
+    currentFilters:any,
     items:string[],
-    onSelectItem:(item:string)=>void
+    onSelectItem:(filters:any)=>void
 }
 
-const ListGroup:React.FC<ListGroupProps>=({items,onSelectItem})=>{
+const ListGroup:React.FC<ListGroupProps>=({items,onSelectItem,currentFilters})=>{
     return(
         <div>
             <div className="list-group">
                 {
-                 items.map((item)=><a  className="list-group-item list-group-item-action" onClick={()=>onSelectItem(item)}>{item}</a>)
+                 items.map((item)=><a  className={`list-group-item list-group-item-action ${currentFilters.genre===item?'active':''}`} onClick={()=>onSelectItem({genre:item,pageNum:1})}>{item}</a>)
                 }
            
           </div>
