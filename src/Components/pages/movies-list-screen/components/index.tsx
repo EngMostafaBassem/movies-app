@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Movie } from '../../../types-dictionary/Movies'
-import ListGroup from '../../common/ListGroup'
+import { Movie } from '../../../../types-dictionary/Movies'
+import ListGroup from '../../../common/ListGroup'
 import MoviesTable from './movies-table'
 import _ from 'lodash'
 

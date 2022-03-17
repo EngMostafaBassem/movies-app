@@ -1,5 +1,6 @@
 import React from "react";
-import { Movie } from "../../../types-dictionary/Movies";
+import { Link } from "react-router-dom";
+import { Movie } from "../../../../types-dictionary/Movies";
 
 interface TableRowProps{
     movie:Movie,
@@ -10,7 +11,7 @@ interface TableRowProps{
 const TableRow:React.FC<TableRowProps>=({movie,onDelete,onLike})=>{
     return(
         <tr>
-         <td>{movie?.title}</td>
+         <td><Link to={`${movie._id}`}>{movie?.title}</Link> </td>
          <td>{movie?.genre?.name}</td>
          <td>{movie?.numberInStock}</td>
          <td>{movie?.dailyRentalRate}</td>

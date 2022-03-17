@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Movie } from "../../../types-dictionary/Movies";
-import Pagination from "../../common/Pagination";
+import { Movie } from "../../../../types-dictionary/Movies";
+import Pagination from "../../../common/Pagination";
 import TableRow from "./table-row";
 import _ from 'lodash'
 

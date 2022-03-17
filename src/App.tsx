@@ -1,14 +1,32 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import MoviesScreen from './Components/list-movies';
-
+import MoviesScreen from './Components/pages/movies-list-screen';
+import CustomersScreen from './Components/pages/customers-list-screen';
+import RentalScreen from './Components/pages/rentals-list-screen'
+import Navbar from './Components/common/Navbar';
+import {BrowserRouter,Routes,Route,}from 'react-router-dom'
+import MoviesView from './Components/pages/movies-view-screen/components';
 function App() {
  
   return (
-    <div className="App">
-     <MoviesScreen/>
+    <BrowserRouter>
+     <Navbar/>
+     <div className="App">
+       <Routes>
+         <Route path='movies' >
+           <Route  index={true} element={<MoviesScreen/>}/>
+           <Route  path=':id' element={<MoviesView/>}/>
+        </Route>
+         <Route path='customers' element={<CustomersScreen/>} />
+         <Route path='rentals' element={<RentalScreen/>} />
+         <Route path='/'  element={<MoviesScreen/>} />
+         <Route path='*'  element={<div>404</div>} />
+         
+={}
+       </Routes>
+       
     </div>
+    </BrowserRouter>
   );
 }
 
