@@ -3,110 +3,44 @@ import { Movie } from '../../../../types-dictionary/Movies'
 import ListGroup from '../../../common/ListGroup'
 import MoviesTable from './movies-table'
 import _ from 'lodash'
-
+import {useNavigate} from 'react-router-dom'
+import MoviesServices from '../../../services/movies'
 const Movies=()=>{
   
-     const [movies,setMovies]=useState<Movie[]>([
-        {
-          _id: "5b21ca3eeb7f6fbccd471815",
-          title: "Terminator",
-          genre: { _id: "5b21ca3eeb7f6fbccd471818", name: "Action" },
-          numberInStock: 6,
-          dailyRentalRate: 2.5,
-          publishDate: "2018-01-03T19:04:28.809Z",
-          liked: true,
-        },
-        {
-          _id: "5b21ca3eeb7f6fbccd471816",
-          title: "Die Hard",
-          genre: { _id: "5b21ca3eeb7f6fbccd471818", name: "Action" },
-          numberInStock: 5,
-          dailyRentalRate: 2.5
-        },
-        {
-          _id: "5b21ca3eeb7f6fbccd471817",
-          title: "Get Out",
-          genre: { _id: "5b21ca3eeb7f6fbccd471820", name: "Action" },
-          numberInStock: 8,
-          dailyRentalRate: 3.5
-        },
-        {
-          _id: "5b21ca3eeb7f6fbccd471819",
-          title: "Trip to Italy",
-          genre: { _id: "5b21ca3eeb7f6fbccd471814", name: "Comedy" },
-          numberInStock: 7,
-          dailyRentalRate: 3.5
-        },
-        {
-          _id: "5b21ca3eeb7f6fbccd47181a",
-          title: "Airplane",
-          genre: { _id: "5b21ca3eeb7f6fbccd471814", name: "Comedy" },
-          numberInStock: 7,
-          dailyRentalRate: 3.5
-        },
-        {
-          _id: "5b21ca3eeb7f6fbccd47181b",
-          title: "Wedding Crashers",
-          genre: { _id: "5b21ca3eeb7f6fbccd471814", name: "Comedy" },
-          numberInStock: 7,
-          dailyRentalRate: 3.5
-        },
-        {
-          _id: "5b21ca3eeb7f6fbccd47181e",
-          title: "Gone Girl",
-          genre: { _id: "5b21ca3eeb7f6fbccd471820", name: "Thriller" },
-          numberInStock: 7,
-          dailyRentalRate: 4.5
-        },
-        {
-          _id: "5b21ca3eeb7f6fbccd47181f",
-          title: "The Sixth Sense",
-          genre: { _id: "5b21ca3eeb7f6fbccd471820", name: "Thriller" },
-          numberInStock: 4,
-          dailyRentalRate: 3.5
-        },
-        {
-          _id: "5b21ca3eeb7f6fbccd471821",
-          title: "The Avengers",
-          genre: { _id: "5b21ca3eeb7f6fbccd471818", name: "Action" },
-          numberInStock: 7,
-          dailyRentalRate: 3.5
-        }
-      ]) 
+     const [movies,setMovies]=useState<Movie[]>([]) 
      const [genres,setGenres]=useState<string[]>(['All Genres','Action','Comedy','Thriller'])
-     const [currFilters,setCurrentFilters]=useState<any>({
+     const [currFilters,setCurrentFilters]=useState<any>(
+       {
        pageSize:3,
        total:movies.length,
        pageNum:1,
-       genre:'All Genres'})
+       genre:'All Genres'}
+       )
      const [filterdMovies,setfilterdMovies]=useState<Movie[]>([])
-     
+     const navigate=useNavigate()
      const handlePageChange=useCallback((pageNum)=>{
-      handleFetchMovies({...currFilters,pageNum})
+      handleDataFiltering({...currFilters,pageNum})
      }
      ,[currFilters])
     
-     const handleDelete=(id:string)=>setMovies(movies.filter(movie=>movie._id!=id))
-     const handleLike=(id:string,isLiked:boolean)=>{
-        let updatedMovies=[...movies]
-        const currentMovie=updatedMovies.find(movie=>movie._id==id)
-        if(currentMovie){
-            currentMovie.liked=isLiked  
-            setMovies(updatedMovies)
-        }   
+     const handleDelete=async(id:string)=>{
+        await MoviesServices.deleteMovie(id)
+        handleFetchMovies()
      }
-    
-     const handleFetchMovies=(filters:any):any=>{
+     
+     const handleLike=async(id:string,isLiked:boolean)=>{
+       await MoviesServices.updateMovie(id,{liked:isLiked})
+       handleFetchMovies() 
+     }   
+     const handleDataFiltering=(filters:any):any=>{
+   
       const {pageNum,pageSize,total,...rest}=filters
       let filtedData=[...movies]
       let totalFilterd=0
       if(rest?.genre){
-        if(rest.genre!='All Genres')filtedData=filtedData.filter(item=>item.genre.name===rest.genre)       
+        if(rest.genre!='All Genres')filtedData=filtedData.filter(item=>item.genre===rest.genre)       
       }
       if(rest?.sort){
-        if(rest.sort=='genre'){
-          rest.sort='genre.name'
-        }
         filtedData=_.orderBy(filtedData,[rest?.sort as string],['asc'])
       }
       
@@ -118,18 +52,26 @@ const Movies=()=>{
       }
       filtedData=_(filtedData).slice((pageNum-1)*pageSize,totalFilterd).take(pageSize).value()
       if(!filtedData.length){
-        return handleFetchMovies({total:movies.length,pageNum:1,pageSize:3,genre:'All Genres'})
+        return handleDataFiltering({total:movies.length,pageNum:1,pageSize:3,genre:'All Genres'})
       }
       setfilterdMovies(filtedData)
       setCurrentFilters({...filters,total:totalFilterd})
     }
-
-    const handleFiltersChange=useCallback((filters)=>{  
-        handleFetchMovies({...currFilters,...filters})  
-    },[currFilters])
+     const handleFiltersChange=useCallback((filters)=>{  
+      handleDataFiltering({...currFilters,...filters})  
+     },[currFilters])
      
+     const handleFetchMovies=async ()=>{
+       const data=await MoviesServices.fetchMovies()
+       setMovies(data)
+     }
+    
+    useEffect(()=>{
+      handleFetchMovies()
+    },[])
+
      useEffect(()=>{ 
-        handleFetchMovies(currFilters) 
+      handleDataFiltering(currFilters)
     },[movies])
 
  return(
@@ -143,15 +85,24 @@ const Movies=()=>{
                />
           </div>
           <div className='col'>
-           <h5>Showing {currFilters.total} movies in the database</h5>
+            <div className='row'>
+              <div className='col-8'>
+                <h5>Showing {currFilters.total} movies in the database</h5>
+              </div>
+              <div className='col'>
+                <button className='btn  btn-primary' onClick={()=>navigate('add')}>New Movie</button>
+              </div>
+
+            </div>
+           
            <MoviesTable 
-           onFilterChange={handleFiltersChange}
-           onPageChange={handlePageChange}
-           filterdData={filterdMovies}
-           data={movies} 
-           onDelete={handleDelete}
-           onLike={handleLike}
-           pagination={{total:currFilters.total,pageSize:currFilters.pageSize,pageNum:currFilters.pageNum}}
+             onFilterChange={handleFiltersChange}
+             onPageChange={handlePageChange}
+             filterdData={filterdMovies}
+             data={movies} 
+             onDelete={handleDelete}
+             onLike={handleLike}
+             pagination={{total:currFilters.total,pageSize:currFilters.pageSize,pageNum:currFilters.pageNum}}
          />
           </div>
          </div>
