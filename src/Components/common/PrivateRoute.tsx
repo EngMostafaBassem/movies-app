@@ -1,15 +1,14 @@
-import React, {ComponentType, useEffect } from 'react'
+import React, {ComponentType, useEffect,ReactChildren } from 'react'
 import { UserContext } from '../contexts/user-context'
 import { Navigate } from 'react-router-dom';
-import { isExpired } from 'react-jwt';
 
-interface  PrivateRouteProps{
-    Component:ComponentType
-}
-const PrivateRoute:React.FC<PrivateRouteProps>=({Component})=>{
+
+
+const PrivateRoute:React.FC<any>=(props)=>{
+
   const context=React.useContext(UserContext)  
-  if(!context?.currentUser) return <Navigate to="/login"/>
-  return <Component/>
+  if(!context?.currentUser?.id&&!localStorage.getItem('access-token'))  return <Navigate to="/login"/>
+  return props.children
 }
 export default PrivateRoute
 

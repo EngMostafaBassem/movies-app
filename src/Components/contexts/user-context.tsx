@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { isExpired, decodeToken } from "react-jwt";
+import { isExpired,decodeToken} from "react-jwt";
 type User={
     id:string,
-    name:string,
-    email:string
 }
 type UserContext={   
  currentUser:User|null,
@@ -17,7 +15,7 @@ type UserContext={
 export const UserContext=React.createContext<UserContext|null>(null)
 
 const UserContextProvider:React.FC<any>=({children})=>{
-    const [currentUser,setCurrentUser]=useState<User|null>(JSON.parse(localStorage.getItem('current-user') as any)||null)
+    const [currentUser,setCurrentUser]=useState<User|null>(null)
     const [authLoading,setAuthLoading]=useState(false)
     const [authError,setAuthError]=useState(false)
  
@@ -25,6 +23,8 @@ const UserContextProvider:React.FC<any>=({children})=>{
         //here will be logic for check login
         const token=localStorage.getItem('access-token')   
         if(token){
+            const decodedToken=decodeToken(token)
+            setCurrentUser({id:(decodedToken as any)?.user_id})
             const isMyTokenExpired = isExpired(token);
             if(isMyTokenExpired===true){
                 localStorage.removeItem('access-token')

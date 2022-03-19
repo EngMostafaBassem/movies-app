@@ -9,8 +9,7 @@ import GenresServices from '../../../services/genres'
 import { UserContext } from '../../../contexts/user-context'
 
 const Movies=()=>{
-     const context=React.useContext(UserContext)
-     console.log('curretn user',context?.currentUser)
+
      const [movies,setMovies]=useState<Movie[]>([]) 
      const[genres,setGenres]=useState<string[]>(['All Genres'])
      const [loading,setLodaing]=useState(false)

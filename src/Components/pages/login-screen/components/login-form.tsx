@@ -14,11 +14,9 @@ const LoginForm=()=>{
          context?.setAuthLoading(true)       
          AuthServices.login(data).
           then(async(id:string)=>{
-              //handle logged in user
-              const user=await AuthServices.fetchCurrentUser(id)
-              localStorage.setItem('current-user',JSON.stringify(user))
+              //handle logged in user   
               context?.setAuthLoading(false)   
-              context?.setCurrentUser(user)
+              context?.setCurrentUser({id})
               navigation('/movies')
           })
          .catch(err=>{
@@ -27,9 +25,7 @@ const LoginForm=()=>{
          })
  
     }
-   if(context?.authLoading)
-     return <Loading/>
-    
+   if(context?.authLoading)  return <Loading/> 
     return(
         <div className='container'>
             <h1>Login</h1>     
