@@ -15,6 +15,7 @@ const GenreSelect:React.FC<GenreSelectProps>=({name,col,label})=>{
     }
     useEffect(()=>{
         fetchGenres()
+       
     },[])
     const {values,handleChange,handleBlur,errors,touched}=useFormikContext<any>()
     return(

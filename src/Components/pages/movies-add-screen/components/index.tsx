@@ -6,14 +6,15 @@ import {schema} from '../schema'
 import GenreSelect from '../../../common/Filterbox/GenreSelect'
 import MoviesServices from '../../../services/movies'
 import { useNavigate } from 'react-router-dom'
+import { UserContext } from '../../../contexts/user-context'
 const MoviesAdd=()=>{
+    const context=React.useContext(UserContext)
     const navigate=useNavigate()
     const handleSubmit=async(values:any)=>{
-        await MoviesServices.addMovie(values)
+        await MoviesServices.addMovie(values,context?.currentUser?.id as string)
         navigate('/')
     }
     return(
-        
              <div className='container'>
                <h1>Movie Form</h1>
                <Form 

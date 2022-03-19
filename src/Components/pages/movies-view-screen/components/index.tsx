@@ -17,24 +17,29 @@ const MoviesView=()=>{
     } 
     const fetchMovie=async(id:string)=>{
         const data=await MoviesServices.fetchMovie(id)
-        setMovie(data)
+        setMovie(data) 
     }
     useEffect(()=>{
         if(params.id)fetchMovie(params.id) 
     },[params.id])
-    console.log('movie data',movie)
     return(
         <div className='container'>
             <h1>Movie Form</h1>
-            <Form values={{...values,...movie}} schema={schema} onSubmit={handleSubmit}>
-                <div className='row'>
-                    <InputForm name='title' label='Title' type='text' col={12}/>
-                    <GenreSelect name='genre' col={12} label="Genre"/>
-                    <InputForm name='numberInStock' label='Number in Stock' type='number' col={12}/>
-                    <InputForm name='dailyRentalRate' label='dailyRentalRate' type='number' col={12}/>
-                </div>
-                <button className='btn btn-primary '  type='submit'>save</button>     
+            { 
+          
+             <Form values={{...values,...movie}} schema={schema} onSubmit={handleSubmit}>
+               <div className='row'>
+                 <InputForm name='title' label='Title' type='text' col={12}/>
+                 <GenreSelect name='genre' col={12} label="Genre"/>
+                 <InputForm name='numberInStock' label='Number in Stock' type='number' col={12}/>
+                 <InputForm name='dailyRentalRate' label='Rate' type='number' col={12}/>
+               </div>
+               <button className='btn btn-primary '  type='submit'>save</button>     
             </Form>
+
+            }
+           
+           
                
         </div>
     )

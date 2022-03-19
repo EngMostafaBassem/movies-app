@@ -6,7 +6,7 @@ export const fetchGenres=async()=>{
     const genres:any=[]
     const querySnapshot = await getDocs(q);
        querySnapshot.forEach((doc) => {
-        genres.push({_id:doc.id,...doc.data()})      
+         genres.push({_id:doc.id,...doc.data()})      
      });
     return genres
 
